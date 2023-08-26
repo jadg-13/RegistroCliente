@@ -2,9 +2,20 @@
 @section('title', 'Cliente')
 @section('content')
 <h1>Lista de clientes</h1>
-<a href="{{ route('customer.export') }}" class="btn btn-outline-info col-12 col-md-2">Exportar</a>
+
 <a href="{{route('customer.index')}}" class="btn btn-outline-success col-12 col-md-2">Registrar</a>
-<table class="table">
+<a href="{{ route('customer.export', ['filtro' => Request::get('filtro')]) }}" class="btn btn-outline-info col-12 col-md-2">Exportar</a>
+<form action="{{ route('customer.findbyname') }}" method="GET" class="mb-3">
+   
+    <div class="input-group">
+        <input type="text" name="filtro" class="form-control" placeholder="Buscar por nombre" value="{{old('filtro', Request::get('filtro'))}}">
+        <div class="input-group-append">
+            <button class="btn btn-outline-secondary" type="submit">Buscar</button>
+        </div>
+    </div>
+</form>
+
+<table class="table table-striped">
     <thead>
         <tr>
             <th>ID</th>

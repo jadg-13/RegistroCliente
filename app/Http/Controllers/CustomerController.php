@@ -18,6 +18,25 @@ class CustomerController extends Controller
         return view('customers.list', compact('customers'));
     }
 
+    public function findByName(Request $request)
+    {
+        $filtro = $request->input('filtro');
+
+        $query = Customer::query();
+
+        if ($filtro) {
+           
+            $query->where('first_name', 'LIKE', "%$filtro%");
+           
+        }
+
+        $customers = $query->get();
+
+        return view('customers.list', compact('customers'));
+    }
+
+
+
     public function index()
     {
         return view('customers.index');
@@ -52,10 +71,19 @@ class CustomerController extends Controller
         }
     }
 
-    public function export()
+    public function export(Request $request)
     {
-        return Excel::download(new CustomerExport, 'Registros.xlsx');
-    }
+        $filtro = $request->input('filtro');
 
-   
+        $query = Customer::query();
+
+        if ($filtro) {
+           
+            $query->where('first_name', 'LIKE', "%$filtro%");
+           
+        }
+
+        $customers = $query->get();
+        return Excel::download(new CustomerExport($customers), 'RegistrosFiltro.xlsx');
+    }
 }

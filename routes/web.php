@@ -20,6 +20,7 @@ Route::get('/', function () {
 });
 
 Route::get('customer/list', [CustomerController::class, 'show'])->name('customer.list');
+Route::get('customer/list/find', [CustomerController::class, 'findByName'])->name('customer.findbyname');
 Route::get('customer', [CustomerController::class, 'index'])->name('customer.index');
 Route::post('customer', [CustomerController::class, 'store' ])->name('customer.save');
 Route::get('customer/list/download', [CustomerController::class, 'export'])->name('customer.export');
