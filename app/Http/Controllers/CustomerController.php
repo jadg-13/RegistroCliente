@@ -25,9 +25,8 @@ class CustomerController extends Controller
         $query = Customer::query();
 
         if ($filtro) {
-           
+
             $query->where('first_name', 'LIKE', "%$filtro%");
-           
         }
 
         $customers = $query->get();
@@ -44,6 +43,14 @@ class CustomerController extends Controller
 
     public function store(StoreCustomer $request)
     {
+        
+        $existe = Customer::where('id_customer', $request->identificador)->first();
+
+        if ($existe) {
+            $mensaje = 'Existe un registro con el código que desea ingresar, verifique y vuelva a intentar...';
+            session()->flash('Advertencia', $mensaje);
+            return redirect()->back()->withErrors(['Advertencia' => $mensaje]);
+        }
 
         $dato = new Customer();
         $dato->first_name = $request->nombre;
@@ -58,17 +65,8 @@ class CustomerController extends Controller
             $dato->image = $imageName;
         }
 
-        $existe = Customer::where('id_customer', $dato->id_customer)->first();
-
-        if (!$existe) {
-            $dato->save();
-            //return $customer;
-            return redirect()->route('customer.list');
-        } else {
-            $mensaje = "Existe un registro con el código que desea ingresar, verifique y vueva a intentar...";
-            session()->flash('Advertencia', $mensaje);
-            return redirect()->back();
-        }
+        $dato->save();
+        return redirect()->route('customer.list');
     }
 
     public function export(Request $request)
@@ -78,12 +76,16 @@ class CustomerController extends Controller
         $query = Customer::query();
 
         if ($filtro) {
-           
+
             $query->where('first_name', 'LIKE', "%$filtro%");
-           
         }
 
         $customers = $query->get();
+
+        $rutaImagenes = public_path('images/');
+        foreach ($customers as $registro) {
+            $registro->image = $rutaImagenes . $registro->image;
+        }
         return Excel::download(new CustomerExport($customers), 'RegistrosFiltro.xlsx');
     }
 }
